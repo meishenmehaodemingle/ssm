@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.bd.mapper.ShopMapper">
+
+  <resultMap id="BaseResultMap" type="com.vip.bd.domain.Shop">
+    <id column="shop_id" jdbcType="INTEGER" property="shopId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="original_price" jdbcType="DECIMAL" property="originalPrice" />
+    <result column="promote_price" jdbcType="DECIMAL" property="promotePrice" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="cate_id" jdbcType="INTEGER" property="cateId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+  </resultMap>
+
+  <resultMap id="shopBaseResultMap" type="com.vip.bd.domain.entity.Shop">
+    <id column="shop_id" jdbcType="INTEGER" property="shopId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="original_price" jdbcType="DECIMAL" property="originalPrice" />
+    <result column="promote_price" jdbcType="DECIMAL" property="promotePrice" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    shop_id, `name`, sub_title, original_price, promote_price, stock, cate_id, create_date
+  </sql>
+
+    <select id="findByKeyword" resultMap="shopBaseResultMap">
+            SELECT s.shop_id, s.name ,s.sub_title,s.original_price,s.promote_price
+            FROM shop s
+            WHERE s.name LIKE concat(concat('%' , #{kw}),'%') OR s.sub_title LIKE concat(concat('%' , #{kw}),'%')
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vip.bd.mapper.CategoryMapper">
+    <resultMap id="base_result_map" type="Category">
+        <id property="cateId" column="cate_id"/>
+        <result property="cateName" column="cate_name"/>
+    </resultMap>
+
+
+    <resultMap id="customResult" type="com.vip.bd.domain.vo.CateGoryVo">
+        <id property="cateId" column="cate_id"/>
+        <result property="cateName" column="cate_name"/>
+        <collection property="subMenuList" resultMap="com.vip.bd.mapper.SubMenuMapper.Base_SubMenu_Vo">
+        </collection>
+    </resultMap>
+
+
+    <select id="findAll" resultMap="customResult">
+        SELECT *
+        FROM category c
+            LEFT JOIN  sub_menu sm ON c.cate_id = sm.cate_id
+            LEFT JOIN sub_menu1 sm1 ON sm.sub_menu_id = sm1.sub_menu_id
+    </select>
+
+
+
+
+
+
+    <resultMap id="cate_shop_result_map" type="com.vip.bd.domain.vo.CateGoryVo" extends="base_result_map">
+            <collection property="shops" resultMap="com.vip.bd.mapper.ShopMapper.shopBaseResultMap"/>
+    </resultMap>
+
+    
+    <select id="findShops" resultMap="cate_shop_result_map">
+        SELECT c.cate_id, c.cate_name,
+               s.shop_id, s.name,  sub_title, original_price
+        FROM category c LEFT JOIN shop s ON c.cate_id = s.cate_id
+    </select>
+
+</mapper>

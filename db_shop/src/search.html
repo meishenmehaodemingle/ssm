@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery.js"></script>
+    <script>
+        let search_url = 'http://localhost:8080/api/v2/search';
+        search_url +=  location.search;
+        $(function () {
+            $.get(search_url,function (results) {
+                alert(results);
+            })
+        });
+
+        function cutUrl(url) {
+            //获取当前页面的url
+            // let urlinfo = window.location.href;
+            //获取url的长度
+            let len = url.length;
+            //设置参数字符串开始的位置
+            let offset = url.indexOf("?");
+            //取出参数字符串 这里会获得类似“id=1”这样的字符串
+            let newsidinfo = url.substr(offset, len);
+            //对获得的参数字符串按照“=”进行分割
+            let newsids = newsidinfo.split("=");
+            //得到参数值
+            return newsids[1];
+        }
+
+    </script>
+
+</head>
+<body>
+<div></div>
+</body>
+</html>

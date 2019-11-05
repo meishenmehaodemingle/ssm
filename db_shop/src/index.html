@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.js"></script>
+    <!--     轮播图-->
+    <script src="https://cdn.bootcss.com/Swiper/4.5.0/js/swiper.js"></script>
+    <!--      核心样式组件-->
+    <link href="css/bootstrap.css" rel="stylesheet">
+<!--    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.css" rel="stylesheet">-->
+    <!--    轮播图-->
+    <link href="https://cdn.bootcss.com/Swiper/4.5.0/css/swiper.css" rel="stylesheet">
+    <link href="css/reset.css" rel="stylesheet">
+    <script>
+        let content_url = 'http://localhost:8080/api/v2/contents';
+        let head_url = 'http://localhost:8080/api/v2/heads';
+        let cate_url = 'http://localhost:8080/api/v2/cate';
+        $(function () {
+            // 获取头部数据
+            $.get(head_url,function (results) {
+                if (results.status===200){
+                    //  导航条动态添加
+                    let $navigation = $("#navigation > ul");
+                    for (const navigation of results.data.navigations) {
+                        $navigation.append(
+                            $("<li>").append(
+                                $("<a>")
+                                    .attr('href',"http://localhost:8080/api/v2/xxx?id=" + navigation.navId)
+                                    .text(navigation.navName)
+                            )
+                        )
+                    }
+                    //分类菜单
+                    let  $cate_main_content = $("#cate_main_content");
+                    // 一级菜单数据
+                    for (const cate of results.data.cateGoryVos) {
+                        $cate_main_content.append(
+                                $("<li>")
+                                    .append(
+                                    $("<a>")
+                                        .attr("href","http://localhost:8080/api/v2/cate?id="+cate.cateId)
+                                        .text(cate.cateName)
+                                ).mouseover(function () {
+                                    showSubMenu(cate.subMenuList);
+                                    $("#cate_sub").show();
+                                })
+                            )
+                    }
+                    $("#cate").mouseleave(function () {
+                        $("#cate_sub").hide();
+                    })
+                }
+            },'json');
+
+            //获取分类信息下的商品信息
+            $.get(content_url,function (results) {
+                if (results.status===200){
+                        // 展示商品信息
+                }
+            },'json')
+        });
+
+         function showSubMenu(subList) {
+             let $cateSub = $("#cate_sub");
+             $cateSub.empty();
+             // 二级菜单 ul
+             let $sub_ul = $("<ul>");
+             //添加二级菜的ul
+             $cateSub.append($sub_ul);
+             for (const sub of subList) {
+                 let $li = $("<li>");
+                 $li.append($("<a>"))
+                     .addClass("pull-left")
+                     .text(sub.subName);
+                 // 显示三次菜单的数据
+                 showSubChilde($li,sub.subMenu1List);
+                 $sub_ul.append($li);
+             }
+
+             //添加三级菜单数据
+             function showSubChilde($li,subMenu1List) {
+                 for (const sub of subMenu1List) {
+                     // $li 二级菜单的li
+                     $li.append(
+                         // 三次菜单的ul
+                         $("<ul>")
+                             .addClass("pull-left")
+                             .append(
+                                $("<li>").append($("<a>")
+                                    .attr("href",cate_url+"?id=" + sub.subMenu2Id)
+                                    .text(sub.menuName))
+                            )
+                     )
+                 }
+             }
+             
+         }
+
+
+    </script>
+
+    <script>
+        // 跳转搜索界面   阻止事件冒泡
+
+        $(function () {
+          $("#search_btn").click(function () {
+              location.href="search.html?keyword=" +  $("#search_from :input").val();
+              return false
+          })
+        })
+
+    </script>
+    <style>
+        #top{
+            height: 30px;
+            line-height: 30px;
+            background: #f2f2f2;
+        }
+        #top a{
+            padding: 5px 20px;
+        }
+
+        #top a:hover{
+            background:  transparent;
+            color: #ff0036;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="head">
+        <nav id="top">
+            <ul class="nav navbar-nav col-lg-6">
+                <li><a>喵，欢迎来天猫</a></li>
+                <li><a href="#">登录</a></li>
+                <li><a href="#">注册</a></li>
+            </ul>
+            <ul class="nav navbar-nav col-lg-6">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        我的淘宝<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">已购买的商品</a></li>
+                        <li><a href="#"> 收藏的商品</a></li>
+                    </ul>
+                </li>
+                <li class=""><a href="#"><span class="glyphicon glyphicon-shopping-cart"></span>购物车</a></li>
+            </ul>
+        </nav>
+        <div class="search row">
+            <div class="col-lg-6">
+                <img src="images/logo.gif">
+            </div>
+            <form  id="search_from" action="#" class="navbar-form navbar-left col-lg-6">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="商品/店铺">
+                </div>
+                <button id="search_btn" type="button" class="btn btn-default">搜索</button>
+            </form>
+        </div>
+        <div id="navigation">
+            <ul class="list-inline">
+            </ul>
+        </div>
+        <!--        定位    z-index -->
+        <div  class="banner_cate">
+            <div id="cate" class="clearfix">
+                <!--                一次菜单-->
+                <div id="cate_main" class="pull-left">
+<!--                       <ul id="cate_main_content" class="list-unstyled">-->
+<!--                            <li><a href="#">电视机</a></li>-->
+<!--                       </ul>-->
+                </div>
+<!--                 二三级菜单-->
+                <div id="cate_sub" class="pull-left" style="display: none;background: red;width: 500px; height: 500px">
+<!--                   二级惨淡-->
+
+                    <ul>
+<!--                        <li>-->
+<!--                            <a>品牌</a>-->
+<!--                             <ul>-->
+<!--&lt;!&ndash;                            三级菜单&ndash;&gt;-->
+<!--                            <li><a href="#">华为</a></li>-->
+<!--                        </ul>-->
+
+<!--                        </li>-->
+                    </ul>
+                </div>
+            </div>
+            <div id="banner">
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="content">
+
+    </div>
+    <div class="footer"></div>
+</div>
+</body>
+</html>
